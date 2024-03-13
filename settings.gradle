@@ -1,0 +1,29 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            library('reposilite', 'com.reposilite:reposilite:3.5.8')
+            
+			version('junit', '5.10.1')
+			library('junit-api', 'org.junit.jupiter', 'junit-jupiter-api').versionRef('junit')
+			library('junit-engine', 'org.junit.jupiter', 'junit-jupiter-engine').versionRef('junit')
+			library('junit-platform-launcher', 'org.junit.platform:junit-platform-launcher:1.10.1')
+			bundle('junit-runtime', ['junit-engine', 'junit-platform-launcher'])
+        }
+    }
+}
+
+rootProject.name = 'reposilite-default-repo'

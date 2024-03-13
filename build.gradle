@@ -1,0 +1,90 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'maven-publish'
+    id 'com.github.ben-manes.versions' version '0.49.0'
+    id 'net.minecraftforge.licenser' version '1.0.1'
+    id 'net.minecraftforge.gradleutils' version '[2.3,2.4)'
+}
+
+group = 'net.minecraftforge.lex'
+version = gradleutils.tagOffsetVersion
+println "Version: $version"
+
+repositories {
+    mavenCentral()
+    maven(gradleutils.forgeMaven)
+    maven { 
+        url = 'https://maven.reposilite.com/releases'
+        name = 'Reposilite'
+    }
+}
+
+license {
+    header = file('LICENSE-header.txt')
+    newLine = false
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    withSourcesJar()
+}
+
+test {
+  useJUnitPlatform()
+}
+
+dependencies {
+    implementation(libs.reposilite)
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.bundles.junit.runtime)
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+            'Specification-Title':    'ReposiliteDefaultRepo',
+            'Specification-Vendor':   'Forge Development LLC',
+            'Specification-Version':   gradleutils.gitInfo.tag,
+            'Implementation-Title':   'ReposiliteDefaultRepo',
+            'Implementation-Vendor':  'Forge Development LLC',
+            'Implementation-Version':  project.version
+        ] as LinkedHashMap, 'net/minecraftforge/lex/reposilitedefaultrepo/')
+    }
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+changelog {
+    fromBase()
+}
+
+publishing {
+    publications.register('mavenJava', MavenPublication) {
+        from components.java
+
+        artifactId = 'reposiite-default-repo'
+
+        pom {
+            name = 'ReposiliteDefaultRepo'
+            description = 'Plugin for Reposilite that redirects everything to the default repo'
+            url = 'https://github.com/LexManos/ReposiliteDefaultRepo'
+
+            gradleutils.pom.setGitHubDetails(pom, 'LexManos', 'ReposiliteDefaultRepo')
+
+            license gradleutils.pom.licenses.LGPLv2_1
+
+            developers {
+                developer gradleutils.pom.Developers.LexManos
+            }
+        }
+    }
+
+    repositories {
+        maven gradleutils.publishingForgeMaven
+    }
+}
